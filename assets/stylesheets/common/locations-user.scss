@@ -1,3 +1,11 @@
+// Hide the core (plain-text) "Location" field in user preferences whenever the
+// plugin's geocoded "Map location" selector is present on the page, so users
+// only see one location field. Self-gating: if `location_users_map` is off the
+// selector isn't rendered and the core field stays visible.
+body:has(.user-location-selector) .pref-location {
+  display: none;
+}
+
 // User location selection //
 .user-card .location-and-website.map-location-enabled {
   .location,
