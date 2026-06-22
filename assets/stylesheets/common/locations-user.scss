@@ -239,6 +239,16 @@ body:has(.user-location-selector) .pref-location {
 
   .set-location-prompt__save {
     white-space: nowrap;
+
+    // Solid muted look when disabled (vs the default translucent 40% opacity,
+    // which made it bleed into the field beside it). Turns primary once valid.
+    &[disabled],
+    &:disabled {
+      opacity: 1;
+      background: var(--primary-low);
+      color: var(--primary-medium);
+      border-color: transparent;
+    }
   }
 
   .set-location-prompt__helper {
