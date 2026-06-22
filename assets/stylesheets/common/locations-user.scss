@@ -232,7 +232,7 @@ body:has(.user-location-selector) .pref-location {
 
   .set-location-prompt__selector {
     flex: 1 1 22em;
-    min-width: 14em;
+    min-width: 0;
     max-width: 32em;
   }
 

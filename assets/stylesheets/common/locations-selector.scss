@@ -1,7 +1,9 @@
 // Inline location search input (type-ahead with a results dropdown) //
 .location-selector-inline {
   position: relative;
-  width: 100%;
+  // No explicit width: as a block it fills its container; as a flex item (e.g.
+  // the prompt banner) it's sized by flex so it doesn't overlap the button.
+  min-width: 0;
 
   .location-selector-inline__field {
     display: flex;
