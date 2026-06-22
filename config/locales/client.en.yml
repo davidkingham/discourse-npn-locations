@@ -12,7 +12,8 @@ en:
     location:
       set_location_prompt:
         title: "Connect with photographers near you"
-        message: "Add your city or general location to the NPN community map. City-level is plenty, and you can update it anytime in Preferences."
+        message: "Add your city or general location to the NPN community map. You can update it anytime in Preferences."
+        helper: "City-level is plenty. Please don't enter a street address."
         placeholder: "Search for your city or town"
         save: "Add to map"
         saving: "Saving…"

@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
+import icon from "discourse/helpers/d-icon";
 import { ajax } from "discourse/lib/ajax";
 import { i18n } from "discourse-i18n";
 import LocationSelector from "../../components/location-selector";
@@ -124,16 +125,18 @@ export default class SetLocationPrompt extends Component {
   <template>
     {{#if this.shouldShow}}
       <div class="set-location-prompt alert">
-        <div class="set-location-prompt__body">
-          <div class="set-location-prompt__text">
-            <span class="set-location-prompt__title">
-              {{i18n "location.set_location_prompt.title"}}
-            </span>
-            <span class="set-location-prompt__message">
-              {{i18n "location.set_location_prompt.message"}}
-            </span>
-          </div>
-          <div class="set-location-prompt__controls">
+        <div class="set-location-prompt__text">
+          <h2 class="set-location-prompt__title">
+            {{icon "location-dot"}}
+            {{i18n "location.set_location_prompt.title"}}
+          </h2>
+          <p class="set-location-prompt__message">
+            {{i18n "location.set_location_prompt.message"}}
+          </p>
+        </div>
+
+        <div class="set-location-prompt__form">
+          <div class="set-location-prompt__field-row">
             <LocationSelector
               @location={{this.selectedGeo}}
               @onChangeCallback={{this.onSelect}}
@@ -153,27 +156,34 @@ export default class SetLocationPrompt extends Component {
                 (i18n "location.set_location_prompt.save")
               }}
             </button>
-            <button
-              type="button"
-              class="btn btn-flat set-location-prompt__dismiss"
-              {{on "click" this.dismiss}}
-            >
-              {{i18n "location.set_location_prompt.dismiss"}}
-            </button>
-            <button
-              type="button"
-              class="btn btn-flat set-location-prompt__opt-out"
-              disabled={{this.saving}}
-              {{on "click" this.dontRemind}}
-            >
-              {{i18n "location.set_location_prompt.dont_remind"}}
-            </button>
           </div>
+          <span class="set-location-prompt__helper">
+            {{i18n "location.set_location_prompt.helper"}}
+          </span>
         </div>
 
         {{#if this.error}}
           <div class="set-location-prompt__error">{{this.error}}</div>
         {{/if}}
+
+        <div class="set-location-prompt__dismiss-row">
+          <button
+            type="button"
+            class="btn btn-flat set-location-prompt__dismiss"
+            {{on "click" this.dismiss}}
+          >
+            {{i18n "location.set_location_prompt.dismiss"}}
+          </button>
+          <span class="set-location-prompt__dismiss-sep" aria-hidden="true">·</span>
+          <button
+            type="button"
+            class="btn btn-flat set-location-prompt__opt-out"
+            disabled={{this.saving}}
+            {{on "click" this.dontRemind}}
+          >
+            {{i18n "location.set_location_prompt.dont_remind"}}
+          </button>
+        </div>
       </div>
     {{/if}}
   </template>

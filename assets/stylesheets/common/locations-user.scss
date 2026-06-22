@@ -181,51 +181,115 @@ body:has(.user-location-selector) .pref-location {
   border: none;
   border-bottom: 1px solid var(--primary-low);
   background: var(--highlight-low);
+  padding: 1.25rem 1.5rem; // ~20-24px breathing room
 
-  .set-location-prompt__body {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75em;
-  }
+  // Two-level layout: text block, then form, then dismissal links.
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
 
   .set-location-prompt__text {
     display: flex;
     flex-direction: column;
-    gap: 0.15em;
-    flex: 1 1 16em;
+    gap: 0.2em;
   }
 
   .set-location-prompt__title {
+    margin: 0;
+    font-size: var(--font-up-1);
     font-weight: 700;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+
+    .d-icon {
+      color: var(--tertiary);
+    }
   }
 
   .set-location-prompt__message {
+    margin: 0;
     color: var(--primary-medium);
+    max-width: 65ch;
   }
 
-  .set-location-prompt__controls {
+  // Field + primary action read as one task.
+  .set-location-prompt__form {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .set-location-prompt__field-row {
+    display: flex;
     align-items: center;
-    gap: 0.5em;
-    flex: 1 1 auto;
+    gap: 0.5rem; // ~8px between field and button
+    flex-wrap: wrap;
   }
 
   .set-location-prompt__selector {
-    flex: 1 1 18em;
+    flex: 1 1 22em;
     min-width: 14em;
     max-width: 32em;
   }
 
+  .set-location-prompt__save {
+    flex: 0 0 auto;
+  }
+
+  .set-location-prompt__helper {
+    font-size: var(--font-down-1);
+    color: var(--primary-medium);
+  }
+
   .set-location-prompt__error {
-    margin-top: 0.5em;
     color: var(--danger);
+  }
+
+  // De-emphasized, tertiary dismissal links.
+  .set-location-prompt__dismiss-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-size: var(--font-down-1);
+  }
+
+  .set-location-prompt__dismiss,
+  .set-location-prompt__opt-out {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--primary-medium);
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      background: none;
+      color: var(--primary);
+    }
+  }
+
+  // The permanent choice is lower contrast / smaller than "Maybe later".
+  .set-location-prompt__opt-out {
+    font-size: var(--font-down-2);
+    color: var(--primary-low-mid);
+  }
+
+  .set-location-prompt__dismiss-sep {
+    color: var(--primary-low-mid);
   }
 }
 
 @media (width <= 40rem) {
-  .set-location-prompt .set-location-prompt__controls {
-    width: 100%;
+  .set-location-prompt {
+    padding: 1rem;
+
+    .set-location-prompt__selector,
+    .set-location-prompt__save {
+      flex: 1 1 100%;
+    }
   }
 }
