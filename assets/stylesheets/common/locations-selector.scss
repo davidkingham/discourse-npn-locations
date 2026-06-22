@@ -1,59 +1,106 @@
-/* Make sure the bordered trigger has a real width constraint */
-.location-selector-wrapper .d-multi-select-trigger {
+// Inline location search input (type-ahead with a results dropdown) //
+.location-selector-inline {
+  position: relative;
   width: 100%;
-  max-width: 100%;
 
-  /* Our inner layout */
-  .geo-d-multi-select-trigger {
+  .location-selector-inline__field {
     display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden; /* key: clip anything that still tries to escape */
-  }
-
-  /* Text side MUST be allowed to shrink */
-  .geo-d-multi-select-trigger__content {
-    flex: 1 1 auto;
-    min-width: 0; /* key flexbox rule */
-    overflow: hidden; /* key for ellipsis */
-  }
-
-  /* Buttons side never shrinks */
-  .geo-d-multi-select-trigger__actions {
-    flex: 0 0 auto;
-    display: inline-flex;
     align-items: center;
     gap: 0.25em;
+    width: 100%;
+    padding: 0 0.25em 0 0.5em;
+    background: var(--secondary);
+    border: 1px solid var(--primary-medium);
+    border-radius: var(--d-input-border-radius, 0.25em);
+
+    &:focus-within {
+      border-color: var(--tertiary);
+      outline: 2px solid var(--tertiary-low);
+      outline-offset: -1px;
+    }
   }
 
-  /* Label (no selection) truncation */
-  .d-multi-select-trigger__label {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .location-selector-inline__search-icon {
+    color: var(--primary-medium);
+    flex: 0 0 auto;
   }
 
-  /* Selection container must also shrink */
-  .d-multi-select-trigger__selection {
+  .location-selector-inline__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0.5em 0.25em;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .location-selector-inline__spinner {
+    flex: 0 0 auto;
     display: flex;
-    min-width: 0;
-    overflow: hidden;
+    align-items: center;
+    padding: 0 0.25em;
   }
 
-  /* Selected item + its text must truncate */
-  .d-multi-select-trigger__selected-item {
-    min-width: 0;
-    max-width: 100%;
+  .location-selector-inline__clear,
+  .location-current-btn {
+    flex: 0 0 auto;
+  }
 
-    .d-multi-select-trigger__selection-label {
-      display: block;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 100%;
+  .location-selector-inline__clear {
+    color: var(--primary-medium);
+  }
+
+  .location-selector-inline__results {
+    position: absolute;
+    z-index: 1000;
+    top: calc(100% + 2px);
+    left: 0;
+    width: 100%;
+    max-height: 18em;
+    overflow-y: auto;
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: var(--d-input-border-radius, 0.25em);
+    box-shadow: var(--shadow-dropdown, 0 4px 14px rgba(0, 0, 0, 0.15));
+  }
+
+  .location-selector-inline__result {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0.5em 0.75em;
+    color: var(--primary);
+    white-space: normal;
+
+    &:hover,
+    &.--active {
+      background: var(--highlight-low);
+    }
+  }
+
+  .location-selector-inline__empty {
+    padding: 0.5em 0.75em;
+    color: var(--primary-medium);
+  }
+
+  .location-selector-inline__provider {
+    padding: 0.4em 0.75em;
+    border-top: 1px solid var(--primary-low);
+    font-size: var(--font-down-2);
+    color: var(--primary-medium);
+
+    a {
+      color: var(--primary-medium);
     }
   }
 }
+

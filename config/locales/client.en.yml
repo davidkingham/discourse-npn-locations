@@ -56,6 +56,7 @@ en:
       geo:
         desc: "Locations provided by {{provider}}"
         use_current_location: "Use my current location"
+        clear: "Clear"
         btn:
           label: "Find Address"
         results: "Addresses"

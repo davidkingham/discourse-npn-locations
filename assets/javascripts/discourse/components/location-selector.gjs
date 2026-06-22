@@ -1,233 +1,307 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { array } from "@ember/helper";
+import { fn } from "@ember/helper";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
-import { escapeExpression } from "discourse/lib/utilities";
+import { htmlSafe } from "@ember/template";
+import DButton from "discourse/components/d-button";
+import concatClass from "discourse/helpers/concat-class";
+import icon from "discourse/helpers/d-icon";
+import { eq } from "discourse/truth-helpers";
 import { i18n } from "discourse-i18n";
 import {
   geoLocationFormat,
   geoLocationSearch,
   providerDetails,
 } from "../lib/location-utilities";
-import GeoDMultiSelect from "./geo-d-multi-select";
 
 /**
- * Location selector component using DMultiSelect for autocomplete functionality
+ * Inline geocoded location search input.
  *
- * @component LocationSelector
- * @param {Object} @location - Current location object with address property
- * @param {string} @context - Context for location search
- * @param {Array} @geoAttrs - geoAttrs to be passed into geoLocationFormat function
- * @param {boolean} @showType - Whether to show location type in results
- * @param {function} @onChangeCallback - Callback when location changes
+ * Type directly in the field; matching addresses appear in a dropdown beneath
+ * it. Selecting one calls @onChangeCallback with the full location object.
+ *
+ * @param {Object}   @location - Pre-selected location object (uses .address)
+ * @param {string}   @context - Optional context passed to the geocoder
+ * @param {Array}    @geoAttrs - Attributes used to format the display text
+ * @param {boolean}  @showType - Reserved (kept for API compatibility)
+ * @param {string}   @placeholder - Input placeholder
+ * @param {function} @onChangeCallback - Called with the selected location (or {} when cleared)
+ * @param {function} @searchError - Called with an error message on search failure
  */
 export default class LocationSelector extends Component {
   @service siteSettings;
   @service site;
 
-  @tracked selectedLocation = null;
+  @tracked searchTerm = "";
+  @tracked results = [];
   @tracked loading = false;
-  @tracked currentProvider = null;
+  @tracked isOpen = false;
+  @tracked activeIndex = -1;
+  @tracked provider = null;
+  @tracked searched = false;
+
+  element = null;
+  _autoPick = false;
+  _outsideHandler = null;
 
   constructor() {
     super(...arguments);
-    this.initializeLocation();
-  }
-
-  initializeLocation() {
-    const locationAddress = this.args.location?.address;
-    if (locationAddress) {
-      // Create a location object from the existing address
-      this.selectedLocation = {
-        address: locationAddress,
-        id: locationAddress, // Use address as ID for comparison
-      };
+    if (this.args.location?.address) {
+      this.searchTerm = this.displayText(this.args.location);
     }
   }
 
-  get loadFn() {
-    return async (term) => {
-      if (!term || term.length === 0) {
-        return [];
-      }
+  @action
+  displayText(location) {
+    if (location && typeof location === "object" && location.address) {
+      return geoLocationFormat(location, this.site.country_codes, {
+        geoAttrs: this.args.geoAttrs,
+      });
+    }
+    return location?.address ?? "";
+  }
 
-      let request = { query: term };
+  get showResults() {
+    return this.isOpen && (this.loading || this.results.length || this.searched);
+  }
 
-      const context = this.args.context;
-      if (context) {
-        request["context"] = context;
-      }
+  get providerLabel() {
+    return this.provider ? providerDetails[this.provider] : null;
+  }
 
-      this.loading = true;
-
-      try {
-        const result = await geoLocationSearch(
-          request,
-          this.siteSettings.location_geocoding_debounce
-        );
-
-        if (result.error) {
-          throw new Error(result.error);
-        }
-
-        const defaultProvider = this.siteSettings.location_geocoding_provider;
-        const geoAttrs = this.args.geoAttrs;
-        const showType = this.args.showType;
-        let locations = [];
-
-        // Store current provider for display
-        this.currentProvider =
-          providerDetails[result.provider || defaultProvider];
-
-        if (!result.locations || result.locations.length === 0) {
-          locations = [];
-        } else {
-          locations = result.locations.map((l) => {
-            if (geoAttrs) {
-              l["geoAttrs"] = geoAttrs;
-            }
-            if (showType !== undefined) {
-              l["showType"] = showType;
-            }
-            // Ensure each location has an ID for comparison
-            l.id = l.address || JSON.stringify(l);
-            return l;
-          });
-        }
-
-        // Add provider info as non-selectable display item
-        if (this.currentProvider) {
-          locations.push({
-            provider: this.currentProvider,
-            address: i18n("location.geo.desc", {
-              provider: this.currentProvider,
-            }),
-          });
-        }
-
-        return locations;
-      } catch (e) {
-        if (this.searchError) {
-          this.searchError(e);
-        }
-        return [];
-      } finally {
-        this.loading = false;
+  @action
+  setup(element) {
+    this.element = element;
+    this._outsideHandler = (e) => {
+      if (this.element && !this.element.contains(e.target)) {
+        this.isOpen = false;
       }
     };
+    document.addEventListener("click", this._outsideHandler, true);
+  }
+
+  @action
+  teardown() {
+    if (this._outsideHandler) {
+      document.removeEventListener("click", this._outsideHandler, true);
+      this._outsideHandler = null;
+    }
+  }
+
+  @action
+  onFocus() {
+    if (this.results.length || this.searched) {
+      this.isOpen = true;
+    }
+  }
+
+  @action
+  onInput(event) {
+    this.searchTerm = event.target.value;
+    this.activeIndex = -1;
+    this._autoPick = false;
+
+    const term = this.searchTerm.trim();
+    if (!term) {
+      this.results = [];
+      this.searched = false;
+      this.isOpen = false;
+      this.loading = false;
+      this.args.onChangeCallback?.({});
+      return;
+    }
+
+    this.isOpen = true;
+    this.search(term);
+  }
+
+  async search(term) {
+    this.loading = true;
+    const request = { query: term };
+    if (this.args.context) {
+      request.context = this.args.context;
+    }
+
+    try {
+      const r = await geoLocationSearch(
+        request,
+        this.siteSettings.location_geocoding_debounce
+      );
+
+      // Ignore stale responses (the user kept typing).
+      if (term !== this.searchTerm.trim() && !this._autoPick) {
+        return;
+      }
+
+      this.results = (r?.locations || []).filter((l) => l && !l.provider);
+      this.provider =
+        r?.provider || this.siteSettings.location_geocoding_provider;
+      this.searched = true;
+      this.loading = false;
+
+      if (this._autoPick && this.results.length) {
+        this._autoPick = false;
+        this.select(this.results[0]);
+      }
+    } catch (e) {
+      this.loading = false;
+      this.results = [];
+      this.searched = true;
+      this.args.searchError?.(e);
+    }
+  }
+
+  @action
+  select(location) {
+    this.args.onChangeCallback?.(location);
+    this.searchTerm = this.displayText(location);
+    this.results = [];
+    this.searched = false;
+    this.activeIndex = -1;
+    this.isOpen = false;
+  }
+
+  @action
+  clear() {
+    this.searchTerm = "";
+    this.results = [];
+    this.searched = false;
+    this.activeIndex = -1;
+    this.isOpen = false;
+    this.args.onChangeCallback?.({});
+  }
+
+  @action
+  setActive(index) {
+    this.activeIndex = index;
+  }
+
+  @action
+  onKeydown(event) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (!this.results.length) {
+        return;
+      }
+      this.isOpen = true;
+      this.activeIndex = Math.min(
+        this.activeIndex + 1,
+        this.results.length - 1
+      );
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      this.activeIndex = Math.max(this.activeIndex - 1, 0);
+    } else if (event.key === "Enter") {
+      if (this.isOpen && this.results[this.activeIndex]) {
+        event.preventDefault();
+        this.select(this.results[this.activeIndex]);
+      }
+    } else if (event.key === "Escape") {
+      this.isOpen = false;
+    }
   }
 
   @action
   useCurrentLocation() {
     if (!navigator.geolocation) {
-      this.flash = "location.geo.error.unsupported";
       return;
     }
+    this._autoPick = true;
+    this.loading = true;
+    this.isOpen = true;
+
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const term = `${latitude}, ${longitude}`;
-        const load = this.loadFn;
-        load(term);
+      ({ coords }) => {
+        const term = `${coords.latitude}, ${coords.longitude}`;
+        this.searchTerm = term;
+        this.search(term);
       },
       () => {
-        this.flash = "location.geo.error.permission";
+        this._autoPick = false;
+        this.loading = false;
       }
     );
   }
 
-  @action
-  handleSelectionChange(selectedLocations) {
-    // Only handle single selection
-    const location = selectedLocations?.[selectedLocations.length - 1];
-
-    if (!location) {
-      this.selectedLocation = {};
-      // Call onChangeCallback with emtpy object to clear location, undefined won't stick.
-    }
-
-    // Don't select special items (a location with provider prop is there for display only)
-    if (location?.provider) {
-      return;
-    }
-
-    this.selectedLocation = location;
-
-    if (this.args.onChangeCallback) {
-      this.args.onChangeCallback(location);
-    }
-  }
-
-  @action
-  compareLocations(a, b) {
-    if (!a || !b) {
-      return false;
-    }
-    return a.id === b.id || a.address === b.address;
-  }
-
-  @action
-  getDisplayText(location) {
-    if (!location) {
-      return "";
-    }
-
-    const geoAttrs = this.args.geoAttrs;
-    if (typeof location === "object" && location.address) {
-      return geoLocationFormat(location, this.site.country_codes, { geoAttrs });
-    }
-
-    return location.address || location.toString();
-  }
-
   <template>
-    <div class="location-selector-wrapper" ...attributes>
-      {{#if this.loading}}
-        <span class="ac-loading">
-          <div class="spinner small"></div>
-        </span>
-      {{/if}}
-      <GeoDMultiSelect
-        @selection={{if
-          this.selectedLocation
-          (array this.selectedLocation)
-          (array)
-        }}
-        @loadFn={{this.loadFn}}
-        @onChange={{this.handleSelectionChange}}
-        @label={{@placeholder}}
-        @compareFn={{this.compareLocations}}
-        @placement="bottom-start"
-        @allowedPlacements={{array "top-start" "bottom-start"}}
-        @matchTriggerWidth={{true}}
-        @matchTriggerMinWidth={{true}}
-        class="location-selector"
-      >
-        <:selection as |location|>
-          {{this.getDisplayText location}}
-        </:selection>
+    <div
+      class="location-selector-wrapper location-selector-inline"
+      {{didInsert this.setup}}
+      {{willDestroy this.teardown}}
+      ...attributes
+    >
+      <div class="location-selector-inline__field">
+        {{icon "magnifying-glass" class="location-selector-inline__search-icon"}}
+        <input
+          type="text"
+          class="location-selector-inline__input"
+          placeholder={{@placeholder}}
+          value={{this.searchTerm}}
+          autocomplete="off"
+          spellcheck="false"
+          {{on "input" this.onInput}}
+          {{on "focus" this.onFocus}}
+          {{on "keydown" this.onKeydown}}
+        />
 
-        <:result as |location|>
-          {{#if location.provider}}
-            <div class="location-provider">
-              <label>{{location.address}}</label>
-            </div>
-          {{else}}
-            <div class="location-form-result">
-              <label>{{escapeExpression location.address}}</label>
-              {{#if location.showType}}
-                {{#if location.type}}
-                  <div class="location-type">{{escapeExpression
-                      location.type
-                    }}</div>
-                {{/if}}
-              {{/if}}
+        {{#if this.loading}}
+          <div class="location-selector-inline__spinner">
+            <div class="spinner small"></div>
+          </div>
+        {{else if this.searchTerm}}
+          <button
+            type="button"
+            class="btn btn-flat btn-transparent location-selector-inline__clear"
+            title={{i18n "location.geo.clear"}}
+            {{on "click" this.clear}}
+          >
+            {{icon "xmark"}}
+          </button>
+        {{/if}}
+
+        <DButton
+          @icon="location-crosshairs"
+          @title="location.geo.use_current_location"
+          class="btn btn-default location-current-btn"
+          @action={{this.useCurrentLocation}}
+        />
+      </div>
+
+      {{#if this.showResults}}
+        <div class="location-selector-inline__results">
+          {{#if this.results.length}}
+            {{#each this.results as |result index|}}
+              <button
+                type="button"
+                class={{concatClass
+                  "location-selector-inline__result"
+                  (if (eq index this.activeIndex) "--active")
+                }}
+                {{on "click" (fn this.select result)}}
+                {{on "mouseenter" (fn this.setActive index)}}
+              >
+                {{this.displayText result}}
+              </button>
+            {{/each}}
+          {{else if this.searched}}
+            {{#unless this.loading}}
+              <div class="location-selector-inline__empty">
+                {{i18n "location.geo.no_results"}}
+              </div>
+            {{/unless}}
+          {{/if}}
+
+          {{#if this.providerLabel}}
+            <div class="location-selector-inline__provider">
+              {{htmlSafe (i18n "location.geo.desc" provider=this.providerLabel)}}
             </div>
           {{/if}}
-        </:result>
-      </GeoDMultiSelect>
-
+        </div>
+      {{/if}}
     </div>
   </template>
 }
