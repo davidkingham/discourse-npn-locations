@@ -60,10 +60,6 @@ export default class SetLocationPrompt extends Component {
     return !this.canSave;
   }
 
-  get setupUrl() {
-    return this.siteSettings.location_prompt_setup_url;
-  }
-
   @action
   onSelect(location) {
     this.error = null;
@@ -172,12 +168,6 @@ export default class SetLocationPrompt extends Component {
 
         {{#if this.error}}
           <div class="set-location-prompt__error">{{this.error}}</div>
-        {{/if}}
-
-        {{#if this.setupUrl}}
-          <a class="set-location-prompt__setup-link" href={{this.setupUrl}}>
-            {{i18n "location.set_location_prompt.setup_link"}}
-          </a>
         {{/if}}
       </div>
     {{/if}}

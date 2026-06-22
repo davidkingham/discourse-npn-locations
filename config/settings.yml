@@ -139,9 +139,6 @@ plugins:
   location_prompt_enabled:
     default: true
     client: true
-  location_prompt_setup_url:
-    default: '/setup'
-    client: true
   location_user_post_format:
     type: list
     default: ''

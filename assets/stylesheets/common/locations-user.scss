@@ -211,12 +211,6 @@ body:has(.user-location-selector) .pref-location {
     margin-top: 0.5em;
     color: var(--danger);
   }
-
-  .set-location-prompt__setup-link {
-    display: inline-block;
-    margin-top: 0.4em;
-    font-size: var(--font-down-1);
-  }
 }
 
 @media (width <= 40rem) {
