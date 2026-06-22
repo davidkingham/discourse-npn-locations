@@ -116,7 +116,12 @@ after_initialize do
     include_condition: -> { object.topic.location.present? }
   ) { object.topic.location }
 
-  if TopicList.respond_to? :preloaded_custom_fields
+  # Use the reload-safe plugin API so "location" survives dev-mode class reloads
+  # (a plain `TopicList.preloaded_custom_fields << ...` is wiped when the
+  # TopicList class reloads, causing HasCustomFields::NotPreloadedError in lists).
+  if respond_to?(:add_preloaded_topic_list_custom_field)
+    add_preloaded_topic_list_custom_field("location")
+  elsif TopicList.respond_to?(:preloaded_custom_fields)
     TopicList.preloaded_custom_fields << "location"
   end
   add_to_serializer(
