@@ -173,3 +173,54 @@ body:has(.user-location-selector) .pref-location {
     }
   }
 }
+
+// "Set your location" prompt banner //
+.set-location-prompt {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--primary-low);
+  background: var(--highlight-low);
+
+  .set-location-prompt__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75em;
+  }
+
+  .set-location-prompt__message {
+    font-weight: 700;
+  }
+
+  .set-location-prompt__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    flex: 1 1 auto;
+  }
+
+  .set-location-prompt__selector {
+    flex: 1 1 18em;
+    min-width: 14em;
+    max-width: 32em;
+  }
+
+  .set-location-prompt__error {
+    margin-top: 0.5em;
+    color: var(--danger);
+  }
+
+  .set-location-prompt__setup-link {
+    display: inline-block;
+    margin-top: 0.4em;
+    font-size: var(--font-down-1);
+  }
+}
+
+@media (width <= 40rem) {
+  .set-location-prompt .set-location-prompt__controls {
+    width: 100%;
+  }
+}

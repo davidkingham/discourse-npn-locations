@@ -137,6 +137,12 @@ after_initialize do
     Locations.parse_geo_location(object.custom_fields["geo_location"])
   end
 
+  # Exposed on the current user so the "set your location" prompt can tell
+  # whether the logged-in user already has a location.
+  add_to_serializer(:current_user, :geo_location, respect_plugin_enabled: false) do
+    Locations.parse_geo_location(object.custom_fields["geo_location"])
+  end
+
   add_to_serializer(
     :user_card,
     :geo_location,
