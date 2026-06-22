@@ -9,7 +9,11 @@ RSpec.describe "Category location settings" do
   let(:category_page) { PageObjects::Pages::Category.new }
 
   def toggle_location_setting(label)
-    find(".form-kit__field", text: label).find(".form-kit__control-checkbox").click
+    # form-kit visually hides the real checkbox input behind a custom checkmark,
+    # so click the visible label (which toggles the input) rather than the input.
+    find(".form-kit__field", text: label).find(
+      ".form-kit__control-checkbox-label"
+    ).click
   end
 
   def expect_location_custom_fields(enabled)

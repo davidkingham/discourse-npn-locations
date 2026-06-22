@@ -32,13 +32,15 @@ acceptance(
       await click("a.fancy-title");
       await click("button.add-location-btn");
       assert.ok(visible(".add-location-modal"), "add location modal is shown");
-      await click(".location-selector .d-multi-select-trigger");
-      await fillIn(".d-multi-select__search-input", "liver building");
-      await click(".location-form-result:first-child label");
+      await fillIn(
+        ".location-selector .location-selector-inline__input",
+        "liver building"
+      );
+      await click(".location-selector-inline__result");
 
       assert
-        .dom(".location-selector .d-multi-select-trigger__selection-label")
-        .hasText(
+        .dom(".location-selector .location-selector-inline__input")
+        .hasValue(
           "Royal Liver Building, Water Street, Ropewalks, Liverpool, Liverpool City Region, England, L3 1EG, United Kingdom"
         );
 
