@@ -266,7 +266,7 @@ export default class LocationSelector extends Component {
         <DButton
           @icon="location-crosshairs"
           @title="location.geo.use_current_location"
-          class="btn btn-default location-current-btn"
+          class="btn btn-flat btn-transparent location-current-btn"
           @action={{this.useCurrentLocation}}
         />
       </div>

@@ -50,10 +50,20 @@
   .location-selector-inline__clear,
   .location-current-btn {
     flex: 0 0 auto;
-  }
-
-  .location-selector-inline__clear {
     color: var(--primary-medium);
+
+    .d-icon {
+      color: var(--primary-medium);
+    }
+
+    &:hover,
+    &:focus {
+      color: var(--primary);
+
+      .d-icon {
+        color: var(--primary);
+      }
+    }
   }
 
   .location-selector-inline__results {
