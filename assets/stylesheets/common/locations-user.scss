@@ -227,17 +227,18 @@ body:has(.user-location-selector) .pref-location {
     display: flex;
     align-items: center;
     gap: 0.5rem; // ~8px between field and button
-    flex-wrap: wrap;
   }
 
+  // Field grows from zero to fill the row; button keeps its natural width.
+  // No wrap + min-width:0 means the field shrinks instead of overlapping.
   .set-location-prompt__selector {
-    flex: 1 1 22em;
+    flex: 1 1 0;
     min-width: 0;
-    max-width: 32em;
   }
 
   .set-location-prompt__save {
     flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .set-location-prompt__helper {
@@ -287,9 +288,10 @@ body:has(.user-location-selector) .pref-location {
   .set-location-prompt {
     padding: 1rem;
 
-    .set-location-prompt__selector,
-    .set-location-prompt__save {
-      flex: 1 1 100%;
+    // Stack the field above a full-width button on narrow screens.
+    .set-location-prompt__field-row {
+      flex-direction: column;
+      align-items: stretch;
     }
   }
 }
