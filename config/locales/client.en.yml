@@ -55,6 +55,7 @@ en:
         desc: "e.g. 42 Wallaby Way, Sydney."
       geo:
         desc: "Locations provided by {{provider}}"
+        use_current_location: "Use my current location"
         btn:
           label: "Find Address"
         results: "Addresses"

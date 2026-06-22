@@ -323,14 +323,10 @@ export default class GeoDMultiSelect extends Component {
 
           <div class="geo-d-multi-select-trigger__actions">
             <DButton
-              @icon="bullseye"
+              @icon="location-crosshairs"
+              @title="location.geo.use_current_location"
               class="btn btn-default location-current-btn"
               @action={{this.useCurrentLocation}}
-            />
-            <DButton
-              @icon="angle-down"
-              class="d-multi-select-trigger__expand-btn btn-transparent"
-              @action={{@componentArgs.show}}
             />
           </div>
         </div>
