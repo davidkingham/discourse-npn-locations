@@ -1,8 +1,8 @@
 {
-  "name": "discourse-locations",
+  "name": "discourse-npn-locations",
   "version": "1.0.0",
-  "repository": "git@github.com:paviliondev/discourse-locations.git",
-  "author": "Pavilion",
+  "repository": "git@github.com:davidkingham/discourse-npn-locations.git",
+  "author": "David Kingham (fork of Pavilion's discourse-locations)",
   "license": "GPL V2",
   "private": true,
   "devDependencies": {

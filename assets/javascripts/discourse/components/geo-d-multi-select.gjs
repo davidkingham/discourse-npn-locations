@@ -1,4 +1,4 @@
-// plugins/discourse-locations/assets/javascripts/discourse/components/geo-d-multi-select.gjs
+// plugins/discourse-npn-locations/assets/javascripts/discourse/components/geo-d-multi-select.gjs
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";

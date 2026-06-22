@@ -7,8 +7,8 @@ import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import icon from "discourse/helpers/d-icon";
 import { geoLocationFormat } from "../lib/location-utilities";
+import LocationFlags from "./location-flags";
 import LocationsMap from "./locations-map";
-import NationalFlag from "./national-flag";
 
 export default class LocationMapComponent extends Component {
   @service siteSettings;
@@ -75,14 +75,6 @@ export default class LocationMapComponent extends Component {
     return !document.querySelector(".leaflet-container");
   }
 
-  get showFlag() {
-    return (
-      this.siteSettings.location_user_country_flag &&
-      this.parsedGeoLocation &&
-      this.parsedGeoLocation.countrycode
-    );
-  }
-
   @action
   bindClick() {
     document.addEventListener("click", this.outsideClick);
@@ -118,11 +110,7 @@ export default class LocationMapComponent extends Component {
           <div class="location-label">
             {{this.userLocation}}
           </div>
-          <div class="location-flag">
-            {{#if this.showFlag}}
-              <NationalFlag @countryCode={{@user.geo_location.countrycode}} />
-            {{/if}}
-          </div>
+          <LocationFlags @geoLocation={{this.parsedGeoLocation}} />
         </DButton>
       </div>
     </div>

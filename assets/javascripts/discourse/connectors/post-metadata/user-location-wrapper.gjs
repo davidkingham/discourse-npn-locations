@@ -1,16 +1,23 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
-import NationalFlag from "../../components/national-flag";
+import LocationFlags from "../../components/location-flags";
 import { geoLocationFormat } from "../../lib/location-utilities";
 
 export default class LocationMapComponent extends Component {
   @service siteSettings;
   @service site;
 
-  get locationText() {
+  get geoLocation() {
     let model = this.args.post;
 
     if (model.user_custom_fields && model.user_custom_fields["geo_location"]) {
+      return model.user_custom_fields["geo_location"];
+    }
+    return null;
+  }
+
+  get locationText() {
+    if (this.geoLocation) {
       let format = this.siteSettings.location_user_post_format.split("|");
       let opts = {};
 
@@ -18,37 +25,16 @@ export default class LocationMapComponent extends Component {
         opts["geoAttrs"] = format;
       }
 
-      return geoLocationFormat(
-        model.user_custom_fields["geo_location"],
-        this.site.country_codes,
-        opts
-      );
+      return geoLocationFormat(this.geoLocation, this.site.country_codes, opts);
     }
     return "";
-  }
-
-  get countryCode() {
-    let model = this.args.post;
-
-    if (model.user_custom_fields && model.user_custom_fields["geo_location"]) {
-      return model.user_custom_fields["geo_location"].countrycode;
-    }
-    return null;
-  }
-
-  get showFlag() {
-    return this.siteSettings.location_user_country_flag && this.countryCode;
   }
 
   <template>
     {{yield}}
     <div class="location-summary">
       <div class="user-location">{{this.locationText}}</div>
-      <div class="location-flag">
-        {{#if this.showFlag}}
-          <NationalFlag @countryCode={{this.countryCode}} />
-        {{/if}}
-      </div>
+      <LocationFlags @geoLocation={{this.geoLocation}} />
     </div>
   </template>
 }

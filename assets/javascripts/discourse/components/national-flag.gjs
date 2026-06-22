@@ -1,13 +1,27 @@
 import Component from "@glimmer/component";
 
 export default class NationalFlagComponent extends Component {
+  get code() {
+    return this.args.countryCode?.toLowerCase();
+  }
+
   get fileName() {
     return (
-      "/plugins/discourse-locations/images/nationalflags/" +
-      this.args.countryCode.toLowerCase() +
+      "/plugins/discourse-npn-locations/images/nationalflags/" +
+      this.code +
       ".png"
     );
   }
 
-  <template><img class="national-flag" src={{this.fileName}} /></template>
+  <template>
+    {{#if this.code}}
+      <img
+        class="national-flag"
+        src={{this.fileName}}
+        title={{this.args.countryCode}}
+        alt={{this.args.countryCode}}
+        loading="lazy"
+      />
+    {{/if}}
+  </template>
 }

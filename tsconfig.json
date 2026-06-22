@@ -8,8 +8,8 @@
   ],
   "compilerOptions": {
     "paths": {
-      "discourse/plugins/discourse-locations/*": ["./assets/javascripts/*"],
-      "discourse/plugins/discourse-locations/admin/*": [
+      "discourse/plugins/discourse-npn-locations/*": ["./assets/javascripts/*"],
+      "discourse/plugins/discourse-npn-locations/admin/*": [
         "./admin/assets/javascripts/admin/*"
       ],
       "admin/*": ["./node_modules/discourse/declarations/admin/*"],

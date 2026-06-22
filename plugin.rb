@@ -1,15 +1,15 @@
 # frozen_string_literal: true
-# name: discourse-locations
-# about: Tools for handling locations in Discourse
-# version: 7.2.0
-# authors: Robert Barrow, Angus McLeod
-# contact_emails: merefield@gmail.com
-# url: https://github.com/merefield/discourse-locations
+# name: discourse-npn-locations
+# about: Tools for handling locations in Discourse (NPN fork of discourse-locations)
+# version: 7.2.0-npn.1
+# authors: Robert Barrow, Angus McLeod (fork maintained by David Kingham)
+# contact_emails: david@exploringexposure.com
+# url: https://github.com/davidkingham/discourse-npn-locations
 
 enabled_site_setting :location_enabled
 
 module ::Locations
-  PLUGIN_NAME = "discourse-locations"
+  PLUGIN_NAME = "discourse-npn-locations"
 end
 
 require_relative "lib/locations/engine"
@@ -350,7 +350,7 @@ end
 
 on(:custom_wizard_ready) do
   if defined?(CustomWizard) == "constant" && CustomWizard.class == Module
-    CustomWizard::Field.register("location", "discourse-locations")
+    CustomWizard::Field.register("location", "discourse-npn-locations")
     CustomWizard::Action.register_callback(
       :before_create_topic
     ) do |params, wizard, action, submission|

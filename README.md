@@ -1,13 +1,24 @@
-# Discourse Locations Plugin
+# Discourse NPN Locations Plugin
 
-The Locations Plugin allows you to associate geocoded locations with topics, and list topics with locations on a map. Additionally it allows users to record their position (voluntarily) and this can show up on a map of Users in the Users directory.
+A private fork of [merefield/discourse-locations](https://github.com/merefield/discourse-locations)
+maintained for use on a single site. It keeps the upstream feature set — geocoded locations on
+topics, a topic/category location map, and voluntary user locations shown on a map in the user
+directory — and layers on site-specific additions.
 
-:page_facing_up: [**Read the documentation**](https://coop.pavilion.tech/docs?category=90&solved=false)
+> **Data compatibility:** this fork reads and writes the same Discourse custom-field keys as
+> upstream (`user_custom_fields['geo_location']`, `topic_custom_fields['location']`, etc.) and keeps
+> the same `location_*` site-setting names. Existing location data and admin configuration carry over
+> with no migration.
 
-:bug: **[Report a bug](https://coop.pavilion.tech/w/bug-report)**
+## Additions over upstream
 
-### Documentation Links
+- **Location-derived flags.** Country flags already render from `geo_location.countrycode` upstream
+  (enable `location_user_country_flag`). This fork extends that with **subdivision flags** (US state
+  flags now, extensible to other countries) derived from `geo_location.state`, plus a cleaner flag
+  display. This replaces the standalone
+  [discourse-nationalflags](https://github.com/chapoi/discourse-nationalflags) plugin.
 
-- [Administration Settings](https://coop.pavilion.tech/docs?topic=1620)
-- [Locations in Topics](https://coop.pavilion.tech/docs?topic=1763)
-- [Locations in Categories](https://coop.pavilion.tech/docs?topic=1550)
+## Lineage
+
+Forked from discourse-locations (GPL-2.0) by Robert Barrow & Angus McLeod / Pavilion. License
+unchanged; see `LICENSE.txt` and `COPYRIGHT.txt`.

@@ -96,9 +96,8 @@
     text-align: left;
   }
 
-  .location-flag img {
-    height: 30px;
-    width: auto;
+  .location-flags {
+    --flag-height: 1.375em;
   }
 
   .d-icon-location-dot {
@@ -130,16 +129,29 @@
       padding: 0 11px 0 11px;
     }
 
-    .location-flag {
+    .location-flags {
       padding: 0 11px 0 0;
-      display: flex;
-      align-items: center;
+      --flag-height: 1.125em;
     }
+  }
+}
 
-    img {
-      width: 24px;
-      height: auto;
-    }
+// Unified flag display (country + region/state), used in posts and on the
+// user card/profile. Flags render as small, consistently sized chips.
+.location-flags {
+  --flag-height: 1.125em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+
+  .national-flag,
+  .subdivision-flag {
+    height: var(--flag-height);
+    width: auto;
+    display: block;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    object-fit: contain;
   }
 }
 

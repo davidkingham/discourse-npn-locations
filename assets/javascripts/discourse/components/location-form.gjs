@@ -438,7 +438,7 @@ export default class LocationForm extends Component {
                 class="input-small input-location lat"
               />
               <div class="icon">
-                <img src="/plugins/discourse-locations/images/latitude.png" />
+                <img src="/plugins/discourse-npn-locations/images/latitude.png" />
               </div>
             </div>
             <div class="instructions">
@@ -463,7 +463,7 @@ export default class LocationForm extends Component {
                 class="input-small input-location lon"
               />
               <div class="icon">
-                <img src="/plugins/discourse-locations/images/longitude.png" />
+                <img src="/plugins/discourse-npn-locations/images/longitude.png" />
               </div>
             </div>
             <div class="instructions">

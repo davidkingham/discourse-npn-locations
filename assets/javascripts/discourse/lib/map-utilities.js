@@ -35,7 +35,7 @@ const generateMap = function (siteSettings, opts) {
   L.tileLayer(siteSettings.location_map_tile_layer, tileOpts).addTo(map);
 
   L.Icon.Default.imagePath = getURL(
-    "/plugins/discourse-locations/leaflet/images/"
+    "/plugins/discourse-npn-locations/leaflet/images/"
   );
 
   L.control.zoom({ position: "bottomleft" }).addTo(map);

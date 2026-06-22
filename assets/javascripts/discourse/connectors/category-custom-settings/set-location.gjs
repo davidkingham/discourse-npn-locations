@@ -3,7 +3,7 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { i18n } from "discourse-i18n";
-import { CATEGORY_LOCATION_SETTINGS } from "discourse/plugins/discourse-locations/discourse/lib/category-location-settings";
+import { CATEGORY_LOCATION_SETTINGS } from "discourse/plugins/discourse-npn-locations/discourse/lib/category-location-settings";
 
 export default class SetLocation extends Component {
   static shouldRender(args, context) {
