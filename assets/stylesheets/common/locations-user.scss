@@ -223,21 +223,21 @@ body:has(.user-location-selector) .pref-location {
     width: 100%;
   }
 
+  // Grid: a flexible field column that can shrink to 0 (minmax(0, 1fr)) and a
+  // button column sized to its content (auto). Separate tracks make overlap
+  // impossible, whatever the field's intrinsic width.
   .set-location-prompt__field-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.5rem; // ~8px between field and button
   }
 
-  // Field grows from zero to fill the row; button keeps its natural width.
-  // No wrap + min-width:0 means the field shrinks instead of overlapping.
   .set-location-prompt__selector {
-    flex: 1 1 0;
     min-width: 0;
   }
 
   .set-location-prompt__save {
-    flex: 0 0 auto;
     white-space: nowrap;
   }
 
@@ -290,8 +290,7 @@ body:has(.user-location-selector) .pref-location {
 
     // Stack the field above a full-width button on narrow screens.
     .set-location-prompt__field-row {
-      flex-direction: column;
-      align-items: stretch;
+      grid-template-columns: 1fr;
     }
   }
 }
