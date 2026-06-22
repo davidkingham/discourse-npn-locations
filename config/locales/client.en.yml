@@ -16,6 +16,7 @@ en:
         save: "Save location"
         saving: "Saving…"
         dismiss: "Not now"
+        dont_remind: "Don't remind me again"
         success: "Thanks! Your location has been saved."
         error: "Sorry, your location couldn't be saved. Please try again."
         setup_link: "Or set it on the setup page"

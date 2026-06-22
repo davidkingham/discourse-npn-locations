@@ -143,6 +143,22 @@ after_initialize do
     Locations.parse_geo_location(object.custom_fields["geo_location"])
   end
 
+  # Per-user permanent opt-out of the "set your location" prompt, for users who
+  # don't want to share a location. Persists across devices (unlike the
+  # session-only dismiss).
+  User.register_custom_field_type("dismissed_location_prompt", :boolean)
+  if defined?(register_editable_user_custom_field)
+    register_editable_user_custom_field("dismissed_location_prompt")
+  end
+  if User.respond_to?(:preloaded_custom_fields)
+    User.preloaded_custom_fields << "dismissed_location_prompt"
+  end
+  add_to_serializer(
+    :current_user,
+    :dismissed_location_prompt,
+    respect_plugin_enabled: false
+  ) { object.custom_fields["dismissed_location_prompt"] }
+
   add_to_serializer(
     :user_card,
     :geo_location,

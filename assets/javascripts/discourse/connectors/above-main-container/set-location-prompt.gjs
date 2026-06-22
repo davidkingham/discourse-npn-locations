@@ -36,11 +36,16 @@ export default class SetLocationPrompt extends Component {
     return Boolean(geo && typeof geo === "object" && Object.keys(geo).length);
   }
 
+  get optedOut() {
+    return Boolean(this.currentUser?.dismissed_location_prompt);
+  }
+
   get shouldShow() {
     return (
       this.siteSettings.location_prompt_enabled &&
       this.currentUser &&
       !this.hasLocation &&
+      !this.optedOut &&
       !this.dismissed
     );
   }
@@ -65,6 +70,13 @@ export default class SetLocationPrompt extends Component {
     this.selectedGeo = location || null;
   }
 
+  async updateCustomFields(fields) {
+    await ajax(`/u/${this.currentUser.username}.json`, {
+      type: "PUT",
+      data: { custom_fields: fields },
+    });
+  }
+
   @action
   async save() {
     if (!this.canSave) {
@@ -77,12 +89,25 @@ export default class SetLocationPrompt extends Component {
     NON_GEO_KEYS.forEach((k) => delete clean[k]);
 
     try {
-      await ajax(`/u/${this.currentUser.username}.json`, {
-        type: "PUT",
-        data: { custom_fields: { geo_location: JSON.stringify(clean) } },
-      });
+      await this.updateCustomFields({ geo_location: JSON.stringify(clean) });
       // Flips hasLocation -> banner hides; also drives flags immediately.
       this.currentUser.set("geo_location", clean);
+    } catch {
+      this.error = i18n("location.set_location_prompt.error");
+    } finally {
+      this.saving = false;
+    }
+  }
+
+  @action
+  async dontRemind() {
+    this.saving = true;
+    this.error = null;
+
+    try {
+      await this.updateCustomFields({ dismissed_location_prompt: true });
+      // Persists across sessions/devices -> banner stays hidden.
+      this.currentUser.set("dismissed_location_prompt", true);
     } catch {
       this.error = i18n("location.set_location_prompt.error");
     } finally {
@@ -133,6 +158,14 @@ export default class SetLocationPrompt extends Component {
               {{on "click" this.dismiss}}
             >
               {{i18n "location.set_location_prompt.dismiss"}}
+            </button>
+            <button
+              type="button"
+              class="btn btn-flat set-location-prompt__opt-out"
+              disabled={{this.saving}}
+              {{on "click" this.dontRemind}}
+            >
+              {{i18n "location.set_location_prompt.dont_remind"}}
             </button>
           </div>
         </div>
