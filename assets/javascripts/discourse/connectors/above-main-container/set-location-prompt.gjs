@@ -125,9 +125,14 @@ export default class SetLocationPrompt extends Component {
     {{#if this.shouldShow}}
       <div class="set-location-prompt alert">
         <div class="set-location-prompt__body">
-          <span class="set-location-prompt__message">
-            {{i18n "location.set_location_prompt.message"}}
-          </span>
+          <div class="set-location-prompt__text">
+            <span class="set-location-prompt__title">
+              {{i18n "location.set_location_prompt.title"}}
+            </span>
+            <span class="set-location-prompt__message">
+              {{i18n "location.set_location_prompt.message"}}
+            </span>
+          </div>
           <div class="set-location-prompt__controls">
             <LocationSelector
               @location={{this.selectedGeo}}

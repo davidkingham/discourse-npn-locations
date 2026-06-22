@@ -11,12 +11,13 @@ en:
         title: "Add a Location"
     location:
       set_location_prompt:
-        message: "Add your general location so you appear on our community map."
+        title: "Connect with photographers near you"
+        message: "Add your city or general location to the NPN community map. City-level is plenty, and you can update it anytime in Preferences."
         placeholder: "Search for your city or town"
-        save: "Save location"
+        save: "Add to map"
         saving: "Saving…"
-        dismiss: "Not now"
-        dont_remind: "Don't remind me again"
+        dismiss: "Maybe later"
+        dont_remind: "Don't ask again"
         success: "Thanks! Your location has been saved."
         error: "Sorry, your location couldn't be saved. Please try again."
       address: "Address"

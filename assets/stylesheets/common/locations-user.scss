@@ -189,8 +189,19 @@ body:has(.user-location-selector) .pref-location {
     gap: 0.75em;
   }
 
-  .set-location-prompt__message {
+  .set-location-prompt__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+    flex: 1 1 16em;
+  }
+
+  .set-location-prompt__title {
     font-weight: 700;
+  }
+
+  .set-location-prompt__message {
+    color: var(--primary-medium);
   }
 
   .set-location-prompt__controls {
