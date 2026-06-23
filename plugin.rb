@@ -35,6 +35,7 @@ if respond_to?(:register_svg_icon)
   register_svg_icon "info"
   register_svg_icon "expand"
   register_svg_icon "location-crosshairs"
+  register_svg_icon "user-group"
 end
 
 add_admin_route "location.admin.region_groups.title", "npn-locations"
