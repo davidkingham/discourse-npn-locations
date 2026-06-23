@@ -31,6 +31,10 @@ import {
  * @param {string}   @placeholder - Input placeholder
  * @param {function} @onChangeCallback - Called with the selected location (or {} when cleared)
  * @param {function} @searchError - Called with an error message on search failure
+ * @param {boolean}  @coarse - Privacy mode for user/community-map locations:
+ *   "use current location" resolves to the town (not exact GPS), and every
+ *   selection is scattered to a random point within its bounding box so pins
+ *   stay approximate and don't stack. Leave off for precise (e.g. topic) use.
  */
 export default class LocationSelector extends Component {
   @service siteSettings;
@@ -182,8 +186,13 @@ export default class LocationSelector extends Component {
 
   @action
   select(location) {
-    this.args.onChangeCallback?.(location);
-    this.searchTerm = this.displayText(location);
+    // In coarse mode (user/community-map locations) scatter to a random nearby
+    // point so the stored location stays approximate and pins don't stack.
+    const final = this.args.coarse
+      ? this.scatterWithinArea(location)
+      : location;
+    this.args.onChangeCallback?.(final);
+    this.searchTerm = this.displayText(final);
     this.results = [];
     this.searched = false;
     this.activeIndex = -1;
@@ -264,6 +273,14 @@ export default class LocationSelector extends Component {
 
       // 2. Re-geocode the town name so we store a generic, town-level location
       //    (the town's centroid) instead of the user's exact GPS position.
+      // Exact mode (e.g. topic locations): use the precise position.
+      if (!this.args.coarse) {
+        this.select(place);
+        return;
+      }
+
+      // Coarse mode: re-geocode the town for a generic location; select() then
+      // scatters it within the town so users don't share a pin.
       const parts = [
         place.city || place.district,
         place.state,
@@ -274,8 +291,7 @@ export default class LocationSelector extends Component {
         ? await this.geocodeFirst(parts.join(", "))
         : null;
 
-      // Scatter within the town so users in the same place don't share a pin.
-      this.select(this.scatterWithinArea(generic || place));
+      this.select(generic || place);
     } catch (e) {
       this.args.searchError?.(e);
     } finally {

@@ -82,6 +82,7 @@ export default class UserCustomPrefsMapLocation extends Component {
               @context={{this.context}}
               @geoAttrs={{array}}
               @showType={{false}}
+              @coarse={{true}}
             />
           </div>
 

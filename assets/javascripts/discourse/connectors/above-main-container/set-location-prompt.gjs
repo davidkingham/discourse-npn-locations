@@ -141,6 +141,7 @@ export default class SetLocationPrompt extends Component {
               @location={{this.selectedGeo}}
               @onChangeCallback={{this.onSelect}}
               @showType={{false}}
+              @coarse={{true}}
               @placeholder={{i18n "location.set_location_prompt.placeholder"}}
               class="set-location-prompt__selector"
             />
