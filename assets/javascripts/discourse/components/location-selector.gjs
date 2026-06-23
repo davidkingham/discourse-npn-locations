@@ -45,7 +45,6 @@ export default class LocationSelector extends Component {
   @tracked searched = false;
 
   element = null;
-  _autoPick = false;
   _outsideHandler = null;
 
   constructor() {
@@ -105,7 +104,6 @@ export default class LocationSelector extends Component {
   onInput(event) {
     this.searchTerm = event.target.value;
     this.activeIndex = -1;
-    this._autoPick = false;
 
     const term = this.searchTerm.trim();
     if (!term) {
@@ -135,7 +133,7 @@ export default class LocationSelector extends Component {
       );
 
       // Ignore stale responses (the user kept typing).
-      if (term !== this.searchTerm.trim() && !this._autoPick) {
+      if (term !== this.searchTerm.trim()) {
         return;
       }
 
@@ -144,17 +142,42 @@ export default class LocationSelector extends Component {
         r?.provider || this.siteSettings.location_geocoding_provider;
       this.searched = true;
       this.loading = false;
-
-      if (this._autoPick && this.results.length) {
-        this._autoPick = false;
-        this.select(this.results[0]);
-      }
     } catch (e) {
       this.loading = false;
       this.results = [];
       this.searched = true;
       this.args.searchError?.(e);
     }
+  }
+
+  // Geocode a query and return the first real (non-attribution) result.
+  async geocodeFirst(query) {
+    const r = await geoLocationSearch(
+      { query },
+      this.siteSettings.location_geocoding_debounce
+    );
+    return (r?.locations || []).find((l) => l && !l.provider) || null;
+  }
+
+  // Move a location to a random point within its bounding box, so many users in
+  // the same town spread across the area instead of stacking on one pin. The
+  // address/town stays the same; only the coordinates are scattered. Falls back
+  // to the original point if there's no usable bounding box. Bounding box order
+  // (Nominatim): [minLat, maxLat, minLon, maxLon].
+  scatterWithinArea(location) {
+    const bb = location?.boundingbox;
+    if (!Array.isArray(bb) || bb.length < 4) {
+      return location;
+    }
+    const [minLat, maxLat, minLon, maxLon] = bb.map(parseFloat);
+    if ([minLat, maxLat, minLon, maxLon].some((n) => Number.isNaN(n))) {
+      return location;
+    }
+    return {
+      ...location,
+      lat: minLat + Math.random() * (maxLat - minLat),
+      lon: minLon + Math.random() * (maxLon - minLon),
+    };
   }
 
   @action
@@ -208,25 +231,56 @@ export default class LocationSelector extends Component {
   }
 
   @action
-  useCurrentLocation() {
+  async useCurrentLocation() {
     if (!navigator.geolocation) {
       return;
     }
-    this._autoPick = true;
-    this.loading = true;
-    this.isOpen = true;
 
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        const term = `${coords.latitude}, ${coords.longitude}`;
-        this.searchTerm = term;
-        this.search(term);
-      },
-      () => {
-        this._autoPick = false;
-        this.loading = false;
+    this.loading = true;
+    this.isOpen = false;
+
+    let coords;
+    try {
+      coords = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve(pos.coords),
+          reject
+        )
+      );
+    } catch {
+      // Permission denied or unavailable.
+      this.loading = false;
+      return;
+    }
+
+    try {
+      // 1. Reverse-geocode the precise coords just to learn the town/region.
+      const place = await this.geocodeFirst(
+        `${coords.latitude}, ${coords.longitude}`
+      );
+      if (!place) {
+        return;
       }
-    );
+
+      // 2. Re-geocode the town name so we store a generic, town-level location
+      //    (the town's centroid) instead of the user's exact GPS position.
+      const parts = [
+        place.city || place.district,
+        place.state,
+        place.country,
+      ].filter(Boolean);
+
+      const generic = parts.length
+        ? await this.geocodeFirst(parts.join(", "))
+        : null;
+
+      // Scatter within the town so users in the same place don't share a pin.
+      this.select(this.scatterWithinArea(generic || place));
+    } catch (e) {
+      this.args.searchError?.(e);
+    } finally {
+      this.loading = false;
+    }
   }
 
   <template>
