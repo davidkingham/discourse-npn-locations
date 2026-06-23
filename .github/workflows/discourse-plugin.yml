@@ -1,11 +1,45 @@
-name: Discourse Plugin
+name: Plugin Tests
 
+# Triggers:
+#   - push to main      → every merge runs the full matrix
+#   - pull_request      → CI on every PR commit
+#   - workflow_dispatch → run manually from the Actions tab
+#   - schedule (weekly) → catch upstream Discourse core changes that break
+#                         this plugin even when its own code is unchanged.
+#                         This is the "core update won't break production"
+#                         canary; on failure the claude-fix workflow reacts.
 on:
   push:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
+  schedule:
+    # Mondays at 05:00 UTC — quiet hours, and a fixed day makes the weekly
+    # core-compat result easy to find in the Actions history.
+    - cron: "0 5 * * 1"
+
+# Cancel superseded runs on the same branch. main is excluded so post-merge
+# and scheduled runs always complete and record status.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   ci:
+    # Discourse core team's reusable plugin workflow. Pinned to a tag (not
+    # @main) so the workflow itself can't change under us silently.
+    # https://github.com/discourse/.github/blob/main/.github/workflows/discourse-plugin.yml
     uses: discourse/.github/.github/workflows/discourse-plugin.yml@v1
+    strategy:
+      fail-fast: false
+      matrix:
+        core_ref:
+          # "latest" = Discourse `tests-passed`, the branch the production
+          # NPN site tracks. This is the leg that matters for production.
+          - latest
+          # "stable" = current Discourse stable release branch. Kept as a
+          # secondary signal; the claude-fix bot only auto-fixes `latest`.
+          - stable
+    with:
+      core_ref: ${{ matrix.core_ref }}
