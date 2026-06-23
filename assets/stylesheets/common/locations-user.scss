@@ -177,12 +177,12 @@ body:has(.user-location-selector) .pref-location {
 
 // "Set your location" prompt banner //
 .set-location-prompt {
-  margin: 0;
-  border-radius: 0;
-  border: none;
-  border-bottom: 1px solid var(--primary-low);
+  // Spaced card: clear gap from the header above, the nav below, and the sides.
+  margin: 1rem;
+  border: 1px solid var(--primary-low);
+  border-radius: var(--d-content-border-radius, 0.5rem);
   background: var(--highlight-low);
-  padding: 1.25rem 1.5rem; // ~20-24px breathing room
+  padding: 1.5rem;
 
   // Two-level layout: text block, then form, then dismissal links.
   display: flex;
@@ -297,6 +297,7 @@ body:has(.user-location-selector) .pref-location {
 
 @media (width <= 40rem) {
   .set-location-prompt {
+    margin: 0.5rem;
     padding: 1rem;
 
     // Stack the field above a full-width button on narrow screens.
