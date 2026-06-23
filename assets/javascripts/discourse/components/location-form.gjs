@@ -6,13 +6,13 @@ import { on } from "@ember/modifier";
 import { action, set } from "@ember/object";
 import { equal } from "@ember/object/computed";
 import { service } from "@ember/service";
-import { trustHTML } from "@ember/template";
 import { hash } from "rsvp";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import { ajax } from "discourse/lib/ajax";
 import ComboBox from "discourse/select-kit/components/combo-box";
 import { i18n } from "discourse-i18n";
 import { geoLocationSearch, providerDetails } from "../lib/location-utilities";
+import trustedHtml from "../lib/trusted-html";
 import GeoLocationResult from "./geo-location-result";
 import LocationSelector from "./location-selector";
 
@@ -405,7 +405,7 @@ export default class LocationForm extends Component {
                   </ul>
                 </div>
                 {{#if this.showProvider}}
-                  <div class="location-form-instructions">{{trustHTML
+                  <div class="location-form-instructions">{{trustedHtml
                       (i18n "location.geo.desc" provider=this.providerDetails)
                     }}</div>
                 {{/if}}
