@@ -36,10 +36,14 @@ jobs:
       matrix:
         core_ref:
           # "latest" = Discourse `tests-passed`, the branch the production
-          # NPN site tracks. This is the leg that matters for production.
+          # NPN site tracks (the rebuild does `git checkout latest`). Production
+          # runs latest, so it's the only leg we gate on.
+          #
+          # "stable" was intentionally dropped: this plugin (and its upstream)
+          # use latest-only Discourse APIs / import paths (e.g.
+          # `discourse/select-kit/*`, `discourse/truth-helpers`, `trustHTML`),
+          # so it does not load on stable — and the site never runs stable.
+          # Re-add `- stable` here if that ever changes.
           - latest
-          # "stable" = current Discourse stable release branch. Kept as a
-          # secondary signal; the claude-fix bot only auto-fixes `latest`.
-          - stable
     with:
       core_ref: ${{ matrix.core_ref }}
