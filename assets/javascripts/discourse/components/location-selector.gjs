@@ -6,7 +6,7 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
-import { trustHTML } from "@ember/template";
+import * as emberTemplate from "@ember/template";
 import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import icon from "discourse/helpers/d-icon";
@@ -17,6 +17,9 @@ import {
   geoLocationSearch,
   providerDetails,
 } from "../lib/location-utilities";
+
+// `trustHTML` on recent Discourse, `htmlSafe` on stable — keep both working.
+const trustedHtml = emberTemplate.trustHTML ?? emberTemplate.htmlSafe;
 
 /**
  * Inline geocoded location search input.
@@ -372,7 +375,7 @@ export default class LocationSelector extends Component {
 
           {{#if this.providerLabel}}
             <div class="location-selector-inline__provider">
-              {{trustHTML
+              {{trustedHtml
                 (i18n "location.geo.desc" provider=this.providerLabel)
               }}
             </div>
