@@ -6,7 +6,6 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
-import * as emberTemplate from "@ember/template";
 import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import icon from "discourse/helpers/d-icon";
@@ -17,9 +16,7 @@ import {
   geoLocationSearch,
   providerDetails,
 } from "../lib/location-utilities";
-
-// `trustHTML` on recent Discourse, `htmlSafe` on stable — keep both working.
-const trustedHtml = emberTemplate.trustHTML ?? emberTemplate.htmlSafe;
+import trustedHtml from "../lib/trusted-html";
 
 /**
  * Inline geocoded location search input.
