@@ -87,7 +87,7 @@ describe "Regional groups", type: :request do
     it "is staff-only" do
       sign_in(user)
       put "/locations/admin/region-groups/#{region_group.id}.json", params: { points: [] }
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(403)
     end
   end
 end

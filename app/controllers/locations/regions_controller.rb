@@ -9,10 +9,7 @@ module ::Locations
     def index
       regions =
         Locations::RegionGroups.all.map do |group|
-          {
-            group: serialize_data(group, BasicGroupSerializer),
-            points: Locations::RegionGroups.points_for(group)
-          }
+          { group: group_json(group), points: Locations::RegionGroups.points_for(group) }
         end
       render json: { regions: regions }
     end
@@ -67,11 +64,15 @@ module ::Locations
     def serialize_near(matches)
       matches.map do |m|
         {
-          group: serialize_data(m[:group], BasicGroupSerializer),
+          group: group_json(m[:group]),
           distance_km: m[:distance_km],
           nearest_label: m[:nearest_label]
         }
       end
+    end
+
+    def group_json(group)
+      { id: group.id, name: group.name, full_name: group.full_name }
     end
   end
 end
