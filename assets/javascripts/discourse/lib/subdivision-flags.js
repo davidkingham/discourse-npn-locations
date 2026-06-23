@@ -114,5 +114,11 @@ export function subdivisionFlagInfo(countryCode, state) {
 }
 
 export function hasSubdivisionFlags(countryCode) {
-  return Boolean(COUNTRIES[String(countryCode || "").toLowerCase().trim()]);
+  return Boolean(
+    COUNTRIES[
+      String(countryCode || "")
+        .toLowerCase()
+        .trim()
+    ]
+  );
 }

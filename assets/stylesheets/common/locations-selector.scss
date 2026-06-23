@@ -1,6 +1,7 @@
 // Inline location search input (type-ahead with a results dropdown) //
 .location-selector-inline {
   position: relative;
+
   // No explicit width: as a block it fills its container; as a flex item (e.g.
   // the prompt banner) it's sized by flex so it doesn't overlap the button.
   min-width: 0;
@@ -81,7 +82,7 @@
     background: var(--secondary);
     border: 1px solid var(--primary-low);
     border-radius: var(--d-input-border-radius, 0.25em);
-    box-shadow: var(--shadow-dropdown, 0 4px 14px rgba(0, 0, 0, 0.15));
+    box-shadow: var(--shadow-dropdown, 0 4px 14px rgb(0, 0, 0, 0.15));
   }
 
   .location-selector-inline__result {
@@ -117,4 +118,3 @@
     }
   }
 }
-

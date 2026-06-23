@@ -18,8 +18,8 @@ export default class NationalFlagComponent extends Component {
       <img
         class="national-flag"
         src={{this.fileName}}
-        title={{this.args.countryCode}}
-        alt={{this.args.countryCode}}
+        title={{@countryCode}}
+        alt={{@countryCode}}
         loading="lazy"
       />
     {{/if}}

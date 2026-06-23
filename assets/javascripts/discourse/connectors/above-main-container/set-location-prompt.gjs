@@ -174,7 +174,10 @@ export default class SetLocationPrompt extends Component {
           >
             {{i18n "location.set_location_prompt.dismiss"}}
           </button>
-          <span class="set-location-prompt__dismiss-sep" aria-hidden="true">·</span>
+          <span
+            class="set-location-prompt__dismiss-sep"
+            aria-hidden="true"
+          >·</span>
           <button
             type="button"
             class="btn btn-flat set-location-prompt__opt-out"

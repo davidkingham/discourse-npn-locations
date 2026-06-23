@@ -6,7 +6,7 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
-import { htmlSafe } from "@ember/template";
+import { trustHTML } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import icon from "discourse/helpers/d-icon";
@@ -66,7 +66,9 @@ export default class LocationSelector extends Component {
   }
 
   get showResults() {
-    return this.isOpen && (this.loading || this.results.length || this.searched);
+    return (
+      this.isOpen && (this.loading || this.results.length || this.searched)
+    );
   }
 
   get providerLabel() {
@@ -235,7 +237,10 @@ export default class LocationSelector extends Component {
       ...attributes
     >
       <div class="location-selector-inline__field">
-        {{icon "magnifying-glass" class="location-selector-inline__search-icon"}}
+        {{icon
+          "magnifying-glass"
+          class="location-selector-inline__search-icon"
+        }}
         <input
           type="text"
           class="location-selector-inline__input"
@@ -297,7 +302,9 @@ export default class LocationSelector extends Component {
 
           {{#if this.providerLabel}}
             <div class="location-selector-inline__provider">
-              {{htmlSafe (i18n "location.geo.desc" provider=this.providerLabel)}}
+              {{trustHTML
+                (i18n "location.geo.desc" provider=this.providerLabel)
+              }}
             </div>
           {{/if}}
         </div>
