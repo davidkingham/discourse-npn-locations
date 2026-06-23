@@ -10,7 +10,10 @@ RSpec.describe "User can manage their location" do
   end
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:location_selector) do
-    PageObjects::Components::LocationSelector.new ".location-selector-wrapper"
+    # Scope to the preferences wrapper specifically: once a location is cleared,
+    # the site-wide "set your location" banner also renders a location selector,
+    # so a bare ".location-selector-wrapper" would match two elements.
+    PageObjects::Components::LocationSelector.new ".user-location-selector"
   end
   fab!(:address_string) do
     "Hope Street, Canning / Georgian Quarter, Toxteth, Liverpool, Liverpool City Region, England, L1 9BW, United Kingdom"
@@ -54,7 +57,7 @@ RSpec.describe "User can manage their location" do
 
     it "allows user to view and update their location preferences" do
       user_preferences_profile_page.visit(user)
-      expect(page).to have_css(".location-selector-wrapper")
+      expect(page).to have_css(".user-location-selector")
       expect(location_selector).to have_selected_location_with_string(
         address_string
       )
