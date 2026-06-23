@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # name: discourse-npn-locations
 # about: Tools for handling locations in Discourse (NPN fork of discourse-locations)
-# version: 7.2.0-npn.1
+# version: 7.2.0-npn.2
 # authors: Robert Barrow, Angus McLeod (fork maintained by David Kingham)
 # contact_emails: david@exploringexposure.com
 # url: https://github.com/davidkingham/discourse-npn-locations
