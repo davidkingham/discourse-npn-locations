@@ -35,7 +35,10 @@ if respond_to?(:register_svg_icon)
   register_svg_icon "info"
   register_svg_icon "expand"
   register_svg_icon "location-crosshairs"
+  register_svg_icon "user-group"
 end
+
+add_admin_route "location.admin.region_groups.title", "npn-locations"
 
 after_initialize do
   # /lib/locations is autoloaded
@@ -47,6 +50,8 @@ after_initialize do
     ../app/serializers/locations/geo_location_serializer.rb
     ../app/controllers/locations/geocode_controller.rb
     ../app/controllers/locations/users_map_controller.rb
+    ../app/controllers/locations/regions_controller.rb
+    ../app/controllers/locations/admin/region_groups_controller.rb
     ../lib/users_map.rb
   ].each { |path| load File.expand_path(path, __FILE__) }
 
@@ -164,6 +169,34 @@ after_initialize do
     :dismissed_location_prompt,
     respect_plugin_enabled: false
   ) { object.custom_fields["dismissed_location_prompt"] }
+
+  # Per-user permanent opt-out of the "join a chapter near you" suggestion.
+  User.register_custom_field_type("dismissed_region_suggestion", :boolean)
+  if defined?(register_editable_user_custom_field)
+    register_editable_user_custom_field("dismissed_region_suggestion")
+  end
+  if User.respond_to?(:preloaded_custom_fields)
+    User.preloaded_custom_fields << "dismissed_region_suggestion"
+  end
+  add_to_serializer(
+    :current_user,
+    :dismissed_region_suggestion,
+    respect_plugin_enabled: false
+  ) { object.custom_fields["dismissed_region_suggestion"] }
+
+  # Regional-group coverage: a JSON array of center+radius points
+  # ([{ "lat", "lon", "radius" (km), "label" }, ...]) stored on the group, used
+  # to suggest/join nearby chapters and to draw the regions map.
+  Group.register_custom_field_type("region_locations", :json)
+  if Group.respond_to?(:preloaded_custom_fields)
+    Group.preloaded_custom_fields << "region_locations"
+  end
+  add_to_class(:group, :region_locations) do
+    raw = custom_fields["region_locations"]
+    next [] if raw.blank?
+    parsed = raw.is_a?(String) ? (JSON.parse(raw) rescue nil) : raw
+    parsed.is_a?(Array) ? parsed : []
+  end
 
   add_to_serializer(
     :user_card,

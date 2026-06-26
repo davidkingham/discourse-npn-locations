@@ -139,6 +139,15 @@ plugins:
   location_prompt_enabled:
     default: true
     client: true
+  location_region_groups_enabled:
+    default: false
+    client: true
+  location_region_default_radius:
+    default: 100
+    client: true
+  location_region_suggestion_enabled:
+    default: true
+    client: true
   location_user_post_format:
     type: list
     default: ''

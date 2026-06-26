@@ -1,0 +1,166 @@
+// "Join a chapter near you" suggestion banner (sibling to the set-location prompt) //
+.region-suggestions {
+  margin: 1rem;
+  border: 1px solid var(--primary-low);
+  border-radius: var(--d-content-border-radius, 0.5rem);
+  background: var(--highlight-low);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .region-suggestions__title {
+    margin: 0;
+    font-size: var(--font-up-1);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+
+    .d-icon {
+      color: var(--tertiary);
+    }
+  }
+
+  .region-suggestions__message {
+    margin: 0;
+    color: var(--primary-medium);
+    max-width: 65ch;
+  }
+
+  .region-suggestions__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .region-suggestions__card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 0.25rem;
+    background: var(--secondary);
+  }
+
+  .region-suggestions__info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .region-suggestions__name {
+    font-weight: 700;
+  }
+
+  .region-suggestions__meta {
+    font-size: var(--font-down-1);
+    color: var(--primary-medium);
+  }
+
+  .region-suggestions__dismiss-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-size: var(--font-down-1);
+  }
+
+  .region-suggestions__dismiss,
+  .region-suggestions__opt-out {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--primary-medium);
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      background: none;
+      color: var(--primary);
+    }
+  }
+
+  .region-suggestions__opt-out {
+    font-size: var(--font-down-2);
+    color: var(--primary-low-mid);
+  }
+
+  .region-suggestions__dismiss-sep {
+    color: var(--primary-low-mid);
+  }
+}
+
+// Regions map page //
+.regions-page {
+  padding: 1rem;
+
+  .regions-page__title {
+    margin-bottom: 0.75rem;
+  }
+
+  .regions-map {
+    height: calc(100vh - 220px);
+    min-height: 360px;
+  }
+}
+
+// Admin: regional groups coverage editor //
+.region-groups-admin {
+  .region-groups-admin__intro {
+    color: var(--primary-medium);
+    max-width: 60ch;
+  }
+
+  .region-groups-admin__add {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: 25rem;
+  }
+}
+
+.region-group-editor {
+  border: 1px solid var(--primary-low);
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .region-group-editor__name {
+    margin: 0 0 0.5rem;
+  }
+
+  .region-group-editor__point {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .region-group-editor__location {
+    flex: 1 1 20em;
+    min-width: 14em;
+  }
+
+  .region-group-editor__radius {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    input {
+      width: 5rem;
+    }
+  }
+
+  .region-group-editor__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .region-group-editor__saved {
+    color: var(--success);
+  }
+}

@@ -10,6 +10,29 @@ en:
         btn: "Add Location"
         title: "Add a Location"
     location:
+      regions:
+        title: "Regional chapters map"
+        nav: "Regions"
+        view_group: "View chapter"
+      region_suggestion:
+        title: "Join a chapter near you"
+        message: "These regional groups cover your area — join to connect with members nearby."
+        distance: "%{km} km away"
+        join: "Join"
+        dismiss: "Maybe later"
+        dont_show: "Don't show again"
+      admin:
+        region_groups:
+          title: "Regional Groups"
+          description: "Give groups a geographic coverage area (one or more center points with a radius) so members can discover and join the chapter near them, and see them on the regions map."
+          add_group: "Add a group"
+          pick_group: "Choose a group…"
+          none: "No groups have coverage yet. Add one above."
+          point_placeholder: "Search for the center city/area"
+          km: "km radius"
+          add_point: "Add point"
+          save: "Save"
+          saved: "Saved"
       set_location_prompt:
         title: "Connect with photographers near you"
         message: "Add your city or general location to the NPN community map. You can update it anytime in Preferences."
