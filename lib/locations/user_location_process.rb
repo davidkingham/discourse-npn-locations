@@ -5,25 +5,29 @@ module ::Locations
 
     def self.upsert(user_id)
       user = User.find_by(id: user_id)
+      return if user.nil?
 
-      return if user.nil? || !user.custom_fields['geo_location'].present? ||
-        user.custom_fields['geo_location'].blank? || !user.custom_fields['geo_location']['lat'].present? ||
-        !user.custom_fields['geo_location']['lon'].present?
+      # `geo_location` is not registered as a :json custom field, so the stored
+      # value is a raw JSON string. Parse it to a Hash before indexing —
+      # subscripting the raw string (`str['lat']`) does substring matching and
+      # silently coerces to 0.0, placing every user on Null Island.
+      geo = ::Locations.parse_geo_location(user.custom_fields['geo_location'])
+      return unless geo.is_a?(Hash) && geo['lat'].present? && geo['lon'].present?
 
       ::Locations::UserLocation.upsert({
           user_id: user_id,
-          latitude: user.custom_fields['geo_location']['lat'],
-          longitude: user.custom_fields['geo_location']['lon'],
-          street: user.custom_fields['geo_location']['street'] || nil,
-          district: user.custom_fields['geo_location']['district'] || nil,
-          city: user.custom_fields['geo_location']['city'] || nil,
-          state: user.custom_fields['geo_location']['state'] || nil,
-          postalcode: user.custom_fields['geo_location']['postalcode'] || nil,
-          country: user.custom_fields['geo_location']['country'] || nil,
-          countrycode: user.custom_fields['geo_location']['countrycode'] || nil,
-          international_code: user.custom_fields['geo_location']['international_code'] || nil,
-          locationtype: user.custom_fields['geo_location']['type'] || nil,
-          boundingbox: user.custom_fields['geo_location']['boundingbox'] || nil,
+          latitude: geo['lat'],
+          longitude: geo['lon'],
+          street: geo['street'] || nil,
+          district: geo['district'] || nil,
+          city: geo['city'] || nil,
+          state: geo['state'] || nil,
+          postalcode: geo['postalcode'] || nil,
+          country: geo['country'] || nil,
+          countrycode: geo['countrycode'] || nil,
+          international_code: geo['international_code'] || nil,
+          locationtype: geo['type'] || nil,
+          boundingbox: geo['boundingbox'] || nil,
         },
         on_duplicate: :update, unique_by: :user_id
       )

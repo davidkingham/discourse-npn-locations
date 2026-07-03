@@ -213,16 +213,16 @@ after_initialize do
     :user_custom_fields,
     respect_plugin_enabled: false
   ) do
-    public_keys = SiteSetting.public_user_custom_fields.split("|")
-    user_fields = object.user&.custom_fields || {}
-
-    out = {}
-    public_keys.each do |k|
-      v = user_fields[k]
-      out[k] = (k == "geo_location" ? Locations.parse_geo_location(v) : v)
+    # Mirror core's value: the batched, preloaded per-user custom fields keyed
+    # by user_id (TopicView#user_custom_fields). Reading object.user.custom_fields
+    # per post instead N+1s on every topic page for every signed-in viewer. We
+    # only diverge to parse geo_location (stored as a JSON string) into a Hash.
+    source = @topic_view&.user_custom_fields || @options[:user_custom_fields] || {}
+    fields = (source[object.user_id] || {}).dup
+    if fields.key?("geo_location")
+      fields["geo_location"] = Locations.parse_geo_location(fields["geo_location"])
     end
-
-    out
+    fields
   end
 
   require_dependency "directory_item_serializer"
@@ -238,11 +238,14 @@ after_initialize do
     end
   end
 
+  # geo_location must be in public_user_custom_fields so it's preloaded and
+  # serialized for the users map. Only write when it's actually missing —
+  # otherwise every boot issues a redundant SiteSetting write.
   public_user_custom_fields = SiteSetting.public_user_custom_fields.split("|")
   if public_user_custom_fields.exclude?("geo_location")
     public_user_custom_fields.push("geo_location")
+    SiteSetting.public_user_custom_fields = public_user_custom_fields.join("|")
   end
-  SiteSetting.public_user_custom_fields = public_user_custom_fields.join("|")
 
   PostRevisor.track_topic_field(:location) do |tc, location|
     category_supports_locations = tc.topic.category&.custom_fields&.[]("location_enabled")
