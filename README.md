@@ -18,7 +18,19 @@ directory — and layers on site-specific additions.
   display. This replaces the standalone
   [discourse-nationalflags](https://github.com/chapoi/discourse-nationalflags) plugin.
 
+## Maintenance log
+
+- **2026-08-10 — `v7.2.0-npn.3`:** Resolved the `discourse.modify-class-model` deprecation
+  (core 2026.8) by replacing `api.modifyClass` on `model:composer` and `model:topic` with the
+  model extension APIs (`addModelField` / `addModelGetter` / `addModelMethod`). The composer's
+  default-location lifecycle moved into the `composer-controls-location` connector
+  (`didInsert`/`didUpdate`). Ported from upstream
+  [merefield/discourse-locations#169](https://github.com/merefield/discourse-locations/pull/169).
+  `main` now requires core ≥ 2026.7.0; older cores are pinned to the pre-migration commit via
+  `.discourse-compatibility`.
+
 ## Lineage
 
 Forked from discourse-locations (GPL-2.0) by Robert Barrow & Angus McLeod / Pavilion. License
-unchanged; see `LICENSE.txt` and `COPYRIGHT.txt`.
+unchanged; see `LICENSE.txt` and `COPYRIGHT.txt`. Fork is based on upstream `v7.2.0`; upstream
+changes are ported selectively (see the maintenance log).
