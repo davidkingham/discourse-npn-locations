@@ -17,6 +17,7 @@ const DISMISS_KEY = "npn-region-suggestion-dismissed";
 // coverage contains them, with one-click join. Sibling to set-location-prompt.
 export default class RegionSuggestions extends Component {
   @service currentUser;
+  @service router;
   @service siteSettings;
 
   @tracked suggestions = [];
@@ -53,8 +54,20 @@ export default class RegionSuggestions extends Component {
     );
   }
 
+  // The User API Key pages are where a member authorizes the NPN app. A banner
+  // here sits above the Authorize button and gets mistaken for the page, so
+  // these routes stay clear.
+  get onApiKeyPage() {
+    return this.router.currentRouteName?.startsWith("user-api-key") ?? false;
+  }
+
   get shouldShow() {
-    return this.eligible && this.loaded && this.suggestions.length > 0;
+    return (
+      this.eligible &&
+      !this.onApiKeyPage &&
+      this.loaded &&
+      this.suggestions.length > 0
+    );
   }
 
   @action
