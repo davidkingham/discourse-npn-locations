@@ -17,6 +17,7 @@ const NON_GEO_KEYS = ["id", "geoAttrs", "showType", "provider"];
 // LocationSelector, or fall back to a setup page link.
 export default class SetLocationPrompt extends Component {
   @service currentUser;
+  @service router;
   @service siteSettings;
 
   @tracked selectedGeo = null;
@@ -41,10 +42,18 @@ export default class SetLocationPrompt extends Component {
     return Boolean(this.currentUser?.dismissed_location_prompt);
   }
 
+  // The User API Key pages are where a member authorizes the NPN app. A banner
+  // here sits above the Authorize button and gets mistaken for the page, so
+  // these routes stay clear.
+  get onApiKeyPage() {
+    return this.router.currentRouteName?.startsWith("user-api-key") ?? false;
+  }
+
   get shouldShow() {
     return (
       this.siteSettings.location_prompt_enabled &&
       this.currentUser &&
+      !this.onApiKeyPage &&
       !this.hasLocation &&
       !this.optedOut &&
       !this.dismissed
