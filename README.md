@@ -20,6 +20,15 @@ directory — and layers on site-specific additions.
 
 ## Maintenance log
 
+- **2026-10-26 — `v7.2.0-npn.4`:** The CI image moved to Ruby 4.0, where `benchmark` is no
+  longer a default gem, so the old rubocop 1.50.2 crashed the linting job. Bumped
+  rubocop-discourse to 3.20.0 (rubocop 1.92.1) and fixed the new style offenses. Four plugin
+  cops are disabled in `.rubocop.yml` because satisfying them changes runtime behavior
+  (`requires_plugin` on the geocode controller, plugin-scoped `on` for the three
+  `DiscourseEvent.on` handlers, `require_relative` in `plugin.rb`, and replacing the
+  `::TopicQuery` reopen with a prepended mixin). Do them as a separate change and re-enable the
+  cops. Also gave `claude-fix.yml` the `id-token: write` and `actions: read` permissions it was
+  missing.
 - **2026-08-10 — `v7.2.0-npn.3`:** Resolved the `discourse.modify-class-model` deprecation
   (core 2026.8) by replacing `api.modifyClass` on `model:composer` and `model:topic` with the
   model extension APIs (`addModelField` / `addModelGetter` / `addModelMethod`). The composer's

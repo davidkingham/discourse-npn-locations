@@ -7,6 +7,7 @@ RSpec.describe "Category default map view" do
   fab!(:category, :category_with_definition)
 
   let(:category_page) { PageObjects::Pages::Category.new }
+
   before do
     SiteSetting.location_enabled = true
     SiteSetting.location_category_map_filter = true
