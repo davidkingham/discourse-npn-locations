@@ -11,3 +11,19 @@ AllCops:
   Exclude:
     - "**/gems/**/*"
     - "**/vendor/**/*"
+
+# Cops introduced by newer rubocop-discourse releases. Satisfying them means
+# runtime changes (gating routes with requires_plugin, scoping event handlers
+# to the plugin, replacing the TopicQuery reopen with a prepended mixin), which
+# should land on their own rather than as part of a lint-tooling bump.
+Discourse/Plugins/CallRequiresPlugin:
+  Enabled: false
+
+Discourse/Plugins/UseRequireRelative:
+  Enabled: false
+
+Discourse/Plugins/UsePluginInstanceOn:
+  Enabled: false
+
+Discourse/Plugins/NoMonkeyPatching:
+  Enabled: false

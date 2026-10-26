@@ -11,8 +11,8 @@ module ::Locations
 
       begin
         result = Locations::Geocode.search(current_user, params[:request])
-      rescue => error
-        error = error
+      rescue => e
+        error = e
       end
 
       if error

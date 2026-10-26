@@ -12,7 +12,7 @@ RSpec.describe TopicsController do
   end
 
   describe "#create" do
-    it "should create topic with custom fields and create TopicLocation" do
+    it "creates topic with custom fields and create TopicLocation" do
       post "/posts.json",
            params: {
              raw: "this is the test content",
@@ -77,7 +77,7 @@ RSpec.describe TopicsController do
     end
     fab!(:post_without_locations) { Fabricate(:post, user: user, topic: topic_without_locations) }
 
-    it "should update topic with custom fields and create TopicLocation" do
+    it "updates topic with custom fields and create TopicLocation" do
       put "/t/#{topic.id}.json", params: { location: { geo_location: { lat: 10, lon: 12 } } }
 
       expect(response.status).to eq(200)
